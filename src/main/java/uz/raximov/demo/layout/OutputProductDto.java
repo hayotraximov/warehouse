@@ -1,0 +1,11 @@
+package uz.raximov.demo.layout;
+
+import lombok.Data;
+
+@Data
+public class OutputProductDto {
+    private Integer productId;
+    private double amount;
+    private double price;
+    private Integer outputId;
+}

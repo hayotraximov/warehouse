@@ -1,0 +1,14 @@
+package uz.raximov.demo.layout;
+
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
+public class InputProductDto {
+    private Integer productId;
+    private double amount;
+    private double price;
+    private Date date;
+    private Integer inputId;
+}

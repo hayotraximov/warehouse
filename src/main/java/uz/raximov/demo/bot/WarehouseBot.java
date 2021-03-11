@@ -61,6 +61,7 @@ public class WarehouseBot extends TelegramLongPollingBot {
                         case BotState.KATALOG_MENU:
                             switch (text) {
                                 case Constant.WAREHOUSE:
+                                    execute(telegramService.warehouseSettings(update));
                                     //metodi
                                     break;
                                 case Constant.CATEGORY:
@@ -88,6 +89,15 @@ public class WarehouseBot extends TelegramLongPollingBot {
                                     break;
                             }
                             break;
+                        case BotState.WAREHOUSE_MENU:
+                            switch (text) {
+                                case Constant.ADD:
+                                    execute(telegramService.warehouseAdd(update));
+                                    break;
+                                default:
+                                    execute(telegramService.warehouseAdd1(update));
+                                    break;
+                            }
                     }
                 }
             } else if (message.hasContact()) {

@@ -12,4 +12,11 @@ public interface TelegramService {
     SendMessage katalogMenu(Update update);
 
 
+    SendMessage warehouseSettings(Update update);
+
+    SendMessage warehouseAdd(Update update);
+
+    SendMessage warehouseAdd1(Update update);
+
+
 }

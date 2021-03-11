@@ -6,11 +6,14 @@ import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.raximov.demo.Entity.User;
+import uz.raximov.demo.Entity.Warehouse;
 import uz.raximov.demo.Repository.UserRepository;
 import uz.raximov.demo.Service.UserService;
+import uz.raximov.demo.Service.WareHouseService;
 import uz.raximov.demo.payload.UserDTO;
 
 import java.util.ArrayList;
@@ -26,6 +29,10 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    WareHouseService wareHouseService;
+
 
     @Override
     public SendMessage login(Update update) {
@@ -172,4 +179,97 @@ public class TelegramServiceImpl implements TelegramService {
 
         return sendMessage;
     }
+
+    @Override
+    public SendMessage warehouseSettings(Update update) {
+
+        SendMessage sendMessage = new SendMessage()
+                .setChatId(update.getMessage().getChatId()) //kimga yuboradi
+                .setParseMode(ParseMode.MARKDOWN); //qanaqa format
+
+        Optional<User> optionalUser = userRepository.findByChatId(update.getMessage().getChatId());
+
+        User user = optionalUser.get();
+        user.setState(BotState.WAREHOUSE_MENU);
+        userRepository.save(user);
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup()
+                .setOneTimeKeyboard(true)
+                .setResizeKeyboard(true)
+                .setSelective(true);
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow keyboardRow = new KeyboardRow(); //qator
+        KeyboardRow keyboardRow1 = new KeyboardRow(); //qator
+        KeyboardRow keyboardRow2 = new KeyboardRow(); //qator
+
+        KeyboardButton keyboardButton = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton1 = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton2 = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton3 = new KeyboardButton(); //bitta button
+
+        keyboardButton.setText(Constant.ADD);
+        keyboardButton1.setText(Constant.EDIT);
+        keyboardButton2.setText(Constant.DELETE);
+        keyboardButton3.setText(Constant.BACK);
+
+
+        keyboardRow.add(keyboardButton);
+        keyboardRow1.add(keyboardButton1);
+        keyboardRow1.add(keyboardButton2);
+
+        keyboardRow2.add(keyboardButton3);
+
+        keyboardRows.add(keyboardRow);
+        keyboardRows.add(keyboardRow1);
+        keyboardRows.add(keyboardRow2);
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        sendMessage.setText(Constant.KATALOG_MENU_TEXT);
+
+        return sendMessage;
+
+    }
+
+    @Override
+    public SendMessage warehouseAdd(Update update) {
+
+        SendMessage sendMessage = new SendMessage()
+                .setChatId(update.getMessage().getChatId()) //kimga yuboradi
+                .setParseMode(ParseMode.MARKDOWN); //qanaqa format
+
+        Optional<User> optionalUser = userRepository.findByChatId(update.getMessage().getChatId());
+
+        User user = optionalUser.get();
+
+        ReplyKeyboardRemove replyKeyboardMarkup = new ReplyKeyboardRemove();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        sendMessage.setText(Constant.W_NAME);
+
+        return sendMessage;
+    }
+
+    @Override
+    public SendMessage warehouseAdd1(Update update) {
+
+        SendMessage sendMessage = new SendMessage()
+                .setChatId(update.getMessage().getChatId()) //kimga yuboradi
+                .setParseMode(ParseMode.MARKDOWN); //qanaqa format
+
+        Optional<User> optionalUser = userRepository.findByChatId(update.getMessage().getChatId());
+
+        User user = optionalUser.get();
+
+        Warehouse warehouse = new Warehouse();
+        warehouse.setName(update.getMessage().getText());
+        wareHouseService.add(warehouse);
+
+        ReplyKeyboardRemove replyKeyboardMarkup = new ReplyKeyboardRemove();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        sendMessage.setText("Xullas qo'shldi!");
+
+        return sendMessage;
+    }
+
+
 }

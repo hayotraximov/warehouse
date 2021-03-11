@@ -29,4 +29,10 @@ public interface Constant {
     String KATALOG_MENU_TEXT = "Quyidagilardan birini tanlang";
 
     String BACK = "Orqaga";
+
+    String ADD = "qo'shish";
+    String EDIT = "o'zgartirish";
+    String DELETE = "o'chirish";
+
+    String W_NAME = "Ombor nomini kiriting";
 }

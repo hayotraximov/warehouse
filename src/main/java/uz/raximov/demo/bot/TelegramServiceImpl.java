@@ -1,0 +1,175 @@
+package uz.raximov.demo.bot;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import uz.raximov.demo.Entity.User;
+import uz.raximov.demo.Repository.UserRepository;
+import uz.raximov.demo.Service.UserService;
+import uz.raximov.demo.payload.UserDTO;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class TelegramServiceImpl implements TelegramService {
+
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    UserService userService;
+
+    @Override
+    public SendMessage login(Update update) {
+
+        SendMessage sendMessage = new SendMessage()
+                .setChatId(update.getMessage().getChatId()) //kimga yuboradi
+                .setParseMode(ParseMode.MARKDOWN); //qanaqa format
+
+        Optional<User> optionalUser = userRepository.findByChatId(update.getMessage().getChatId());
+
+        if (optionalUser.isPresent()) {
+            sendMessage.setText(Constant.WELCOME_TEXT);
+
+            User user = optionalUser.get();
+            user.setState(BotState.LOGIN);
+            userRepository.save(user);
+        } else {
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup()
+                    .setOneTimeKeyboard(true)
+                    .setResizeKeyboard(true)
+                    .setSelective(true);
+
+            List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+            KeyboardRow keyboardRow = new KeyboardRow(); //qator
+            KeyboardButton keyboardButton = new KeyboardButton(); //bitta button
+            keyboardButton.setRequestContact(true); //contact
+
+            keyboardButton.setText(Constant.SHARE_CONTACT);
+            keyboardRow.add(keyboardButton);
+            keyboardRows.add(keyboardRow);
+            replyKeyboardMarkup.setKeyboard(keyboardRows);
+            sendMessage.setText(Constant.CONTACT_TEXT);
+            sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        }
+
+        return sendMessage;
+    }
+
+    @Override
+    public SendMessage shareContact(Update update) {
+
+        SendMessage sendMessage = new SendMessage()
+                .setChatId(update.getMessage().getChatId()) //kimga yuboradi
+                .setParseMode(ParseMode.MARKDOWN); //qanaqa format
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setFirstName(update.getMessage().getContact().getFirstName());
+        userDTO.setLastName(update.getMessage().getContact().getLastName());
+        userDTO.setPhoneNumber(update.getMessage().getContact().getPhoneNumber());
+        userDTO.setChatId(update.getMessage().getChatId());
+        userDTO.setPassword("123");
+        User user = userService.add(userDTO);
+        user.setState(BotState.SHARECONTACT);
+        userRepository.save(user);
+
+        sendMessage.setText(user.getFirstName() + " " + user.getLastName() + "! " + Constant.WELCOME_TEXT);
+
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup()
+                .setOneTimeKeyboard(true)
+                .setResizeKeyboard(true)
+                .setSelective(true);
+
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow keyboardRow = new KeyboardRow(); //qator
+        KeyboardRow keyboardRow1 = new KeyboardRow(); //qator
+        KeyboardButton keyboardButton = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton1 = new KeyboardButton(); //bitta button
+
+        keyboardButton.setText(Constant.MAIN_MENU);
+        keyboardButton1.setText(Constant.KATALOG);
+        keyboardRow.add(keyboardButton);
+        keyboardRow1.add(keyboardButton1);
+        keyboardRows.add(keyboardRow);
+        keyboardRows.add(keyboardRow1);
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+
+        return sendMessage;
+    }
+
+    @Override
+    public SendMessage katalogMenu(Update update) {
+        SendMessage sendMessage = new SendMessage()
+                .setChatId(update.getMessage().getChatId()) //kimga yuboradi
+                .setParseMode(ParseMode.MARKDOWN); //qanaqa format
+
+        Optional<User> optionalUser = userRepository.findByChatId(update.getMessage().getChatId());
+
+        User user = optionalUser.get();
+        user.setState(BotState.KATALOG_MENU);
+        userRepository.save(user);
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup()
+                .setOneTimeKeyboard(true)
+                .setResizeKeyboard(true)
+                .setSelective(true);
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow keyboardRow = new KeyboardRow(); //qator
+        KeyboardRow keyboardRow1 = new KeyboardRow(); //qator
+        KeyboardRow keyboardRow2 = new KeyboardRow(); //qator
+        KeyboardRow keyboardRow3 = new KeyboardRow(); //qator
+
+        KeyboardButton keyboardButton = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton1 = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton2 = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton3 = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton4 = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton5 = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton6 = new KeyboardButton(); //bitta button
+        KeyboardButton keyboardButton7 = new KeyboardButton(); //bitta button
+
+        keyboardButton.setText(Constant.CATEGORY);
+        keyboardButton1.setText(Constant.MEASUREMENT);
+        keyboardButton2.setText(Constant.CURRENCY);
+        keyboardButton3.setText(Constant.SUPPLIER);
+        keyboardButton4.setText(Constant.USERS);
+        keyboardButton5.setText(Constant.WAREHOUSE);
+        keyboardButton6.setText(Constant.PRODUCT);
+        keyboardButton7.setText(Constant.BACK);
+
+
+        keyboardRow.add(keyboardButton5); //ombor
+        keyboardRow.add(keyboardButton); //category
+        keyboardRow.add(keyboardButton1); //olchov birligi
+
+        keyboardRow1.add(keyboardButton2);
+        keyboardRow1.add(keyboardButton3);
+        keyboardRow1.add(keyboardButton4);
+
+        keyboardRow2.add(keyboardButton6);
+        keyboardRow3.add(keyboardButton7);
+
+        keyboardRows.add(keyboardRow);
+        keyboardRows.add(keyboardRow1);
+        keyboardRows.add(keyboardRow2);
+        keyboardRows.add(keyboardRow3);
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        sendMessage.setText(Constant.KATALOG_MENU_TEXT);
+
+        return sendMessage;
+    }
+}

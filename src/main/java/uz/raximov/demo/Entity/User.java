@@ -16,23 +16,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    @Column(nullable = false)
     private String code;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private boolean active;
+
+    private Long chatId;
+
+    private String state; //bosqich
 
     @ManyToMany
     private Set<Warehouse> warehouseSet;

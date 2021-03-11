@@ -10,4 +10,5 @@ public class UserDTO {
     private String password;
     private Integer[] wareHouseId;
     private boolean status;
+    private Long chatId;
 }

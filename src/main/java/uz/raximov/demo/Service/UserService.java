@@ -26,25 +26,25 @@ public class UserService {
     WareHouseService wareHouseService;
 
     //Barchasini qaytarish
-    public Page<User> page(Integer page){
-        Pageable pageable = PageRequest.of(page,10);
+    public Page<User> page(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10);
         return userRepository.findAll(pageable);
     }
 
     //Id bo'yicha qaytarish
-    public User getById(Integer id){
+    public User getById(Integer id) {
         Optional<User> optionalCategory = userRepository.findById(id);
         return optionalCategory.orElseGet(User::new);
     }
 
     //O'chirish
-    public Delete delete(Integer id){
+    public Delete delete(Integer id) {
         return new Delete();
         //kod yozish kerak
     }
 
     //Qo'shish
-    public User add(UserDTO userDTO){
+    public User add(UserDTO userDTO) {
         Optional<User> optionalUser = userRepository.findByPhoneNumber(userDTO.getPhoneNumber());
         if (!optionalUser.isPresent()) {
             UUID uuid = UUID.randomUUID();
@@ -55,11 +55,14 @@ public class UserService {
             user.setLastName(userDTO.getLastName());
             user.setPhoneNumber(userDTO.getPhoneNumber());
             user.setPassword(userDTO.getPassword());
+            user.setChatId(userDTO.getChatId());
 
             Set<Warehouse> warehouseSet = new HashSet<>();
-            for (Integer integer : userDTO.getWareHouseId()) {
-                Optional<Warehouse> warehouseOptional = wareHouseService.wareHouseRepository.findById(integer);
-                warehouseOptional.ifPresent(warehouseSet::add);
+            if (userDTO.getWareHouseId() != null) {
+                for (Integer integer : userDTO.getWareHouseId()) {
+                    Optional<Warehouse> warehouseOptional = wareHouseService.wareHouseRepository.findById(integer);
+                    warehouseOptional.ifPresent(warehouseSet::add);
+                }
             }
 
             user.setWarehouseSet(warehouseSet);
@@ -69,7 +72,7 @@ public class UserService {
     }
 
     //Tahrirlash
-    public User edit(Integer id, UserDTO userDTO){
+    public User edit(Integer id, UserDTO userDTO) {
 
         Optional<User> userOptional = userRepository.findById(id);
 

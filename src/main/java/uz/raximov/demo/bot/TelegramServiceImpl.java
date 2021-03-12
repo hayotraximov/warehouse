@@ -275,6 +275,7 @@ public class TelegramServiceImpl implements TelegramService {
         User user = optionalUser.get();
 
         if (warehouse != null) {
+            warehouse.setName(update.getMessage().getText());
             Warehouse edit = wareHouseService.edit(warehouse.getId(), warehouse);
 
             sendMessage.setText("Edit bo'ldi!");

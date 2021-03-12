@@ -17,13 +17,14 @@ import java.util.Optional;
 @Component
 public class WarehouseBot extends TelegramLongPollingBot {
 
-    @Value("1291574651:AAFJ_P18j7SWLp4EuZHfDU2l1RGtaP9Op8w")
+    @Value("1496299501:AAE7cv3QrTGZp65DduWETIf_fNdrrt1PQSw")
     String token;
 
-    @Value("jafarTestBot")
+    @Value("beployuz_bot")
     String botName;
 
     boolean edit = false;
+    boolean check = true;
 
     @Autowired
     TelegramService telegramService;
@@ -92,9 +93,10 @@ public class WarehouseBot extends TelegramLongPollingBot {
                             }
                             break;
                         case BotState.WAREHOUSE_MENU:
-                            if (edit) {
+
+                            if (edit && check) {
                                 execute(telegramService.warehouseAdd(update));
-                                edit = false;
+                                check = false;
                             }
                             switch (text) {
                                 case Constant.ADD:
@@ -103,15 +105,20 @@ public class WarehouseBot extends TelegramLongPollingBot {
                                 case Constant.EDIT:
                                     execute(telegramService.warehouseEdit(update));
                                     edit = true;
+                                    check = true;
                                     break;
                                 default:
-                                    if (!edit) {
+                                    if (!edit || check) {
                                         execute(telegramService.warehouseAdd1(update));
                                         execute(telegramService.warehouseSettings(update));
+                                        check = true;
                                     }
                                     break;
                             }
 
+                    }
+                    if (!check){
+                        edit = false;
                     }
                 }
             } else if (message.hasContact()) {
